@@ -15,7 +15,7 @@ export default function AdvancedSearch() {
       ></div>
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-md">Advanced Search</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-primary drop-shadow-md">Advanced Search</h1>
           <p className="mt-2 inline-block px-3 py-1 rounded-md bg-black/70 dark:bg-white/10 backdrop-blur-sm text-white font-medium">
             Refine your search with specific criteria
           </p>

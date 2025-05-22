@@ -75,7 +75,7 @@ export default function Search() {
       ></div>
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-md">Search Papers</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-primary drop-shadow-md">Search Papers</h1>
           <p className="mt-2 inline-block px-3 py-1 rounded-md bg-black/70 dark:bg-white/10 backdrop-blur-sm text-white font-medium">
             Find academic papers and research for your thesis
           </p>
