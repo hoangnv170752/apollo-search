@@ -67,8 +67,10 @@ export default function Home() {
               </form>
             </div>
 
-            <div className="mt-8 text-center text-sm text-white drop-shadow-md">
-              <p>To open science and knowledge for everyone</p>
+            <div className="mt-8 text-center text-sm">
+              <p className="text-[hsl(var(--tagline))] font-medium drop-shadow-md">
+                To open science and knowledge for everyone
+              </p>
             </div>
           </div>
         </div>
