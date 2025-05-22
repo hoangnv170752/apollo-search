@@ -56,9 +56,9 @@ export function VisitorCounterBox() {
 
   return (
     <div className="inline-block">
-      <Card className="border-primary/20 overflow-hidden w-[200px]">
+      <Card className="border-primary/20 overflow-hidden w-[220px] shadow-none">
         <CardHeader className="bg-primary/10 py-2 px-3">
-          <CardTitle className="text-sm font-medium text-center">Visitor Counter</CardTitle>
+          <CardTitle className="text-sm font-medium text-center">Visitor Statistics</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <table className="w-full text-sm">
@@ -81,18 +81,11 @@ export function VisitorCounterBox() {
               </tr>
             </tbody>
           </table>
+          <div className="w-full text-center mt-1">
+            <span className="text-[10px] text-muted-foreground">powered by Free-Counters</span>
+          </div>
         </CardContent>
       </Card>
-      <div className="mt-1 text-center">
-        <a
-          href="https://www.free-counters.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-muted-foreground hover:underline"
-        >
-          powered by Free-Counters
-        </a>
-      </div>
     </div>
   )
 }

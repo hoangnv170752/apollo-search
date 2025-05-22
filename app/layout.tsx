@@ -3,15 +3,14 @@ import "@/app/globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navbar } from "@/components/navbar"
-import { VisitorCounterBox } from "@/components/visitor-counter-box"
-import { CounterContainer } from "@/components/counter-container"
+import { VisitorCounterModal } from "@/components/visitor-counter-modal"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
   title: "Apolo Search | Academic Research Assistant",
   description: "AI-powered academic research assistant for finding scholarly papers",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -31,9 +30,8 @@ export default function RootLayout({
                 Apollo Search © {new Date().getFullYear()} | To Open Science
               </p>
               <div className="flex justify-center mb-2">
-                <VisitorCounterBox />
+                <VisitorCounterModal />
               </div>
-              <CounterContainer />
             </footer>
           </div>
         </ThemeProvider>
