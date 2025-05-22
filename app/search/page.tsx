@@ -40,27 +40,35 @@ export default function Search() {
   }, [query])
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-primary">Search Papers</h1>
-        <p className="text-[hsl(var(--tagline))] drop-shadow-md mt-2">
-          Find academic papers and research for your thesis
-        </p>
+    <>
+      <div
+        className="fixed inset-0 bg-[url('/circular-library.jpeg')] bg-cover bg-center bg-no-repeat"
+        style={{
+          zIndex: -1,
+        }}
+      ></div>
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-md">Search Papers</h1>
+          <p className="mt-2 inline-block px-3 py-1 rounded-md bg-black/70 dark:bg-white/10 backdrop-blur-sm text-white font-medium">
+            Find academic papers and research for your thesis
+          </p>
+        </div>
+
+        <div className="max-w-4xl mx-auto">
+          <SearchForm initialQuery={query} />
+
+          {error && (
+            <div className="mt-6 bg-destructive/15 text-destructive p-4 rounded-md border border-destructive/30">
+              {error}
+            </div>
+          )}
+
+          {isLoading && <LoadingState />}
+
+          {results && !isLoading && <SearchResults results={results} />}
+        </div>
       </div>
-
-      <div className="max-w-4xl mx-auto">
-        <SearchForm initialQuery={query} />
-
-        {error && (
-          <div className="mt-6 bg-destructive/15 text-destructive p-4 rounded-md border border-destructive/30">
-            {error}
-          </div>
-        )}
-
-        {isLoading && <LoadingState />}
-
-        {results && !isLoading && <SearchResults results={results} />}
-      </div>
-    </div>
+    </>
   )
 }

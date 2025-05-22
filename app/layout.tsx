@@ -27,7 +27,7 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-1 relative">{children}</main>
             <footer className="relative z-10 border-t py-4 text-center text-sm text-muted-foreground bg-background">
-              <p className="mb-4 text-[hsl(var(--tagline))] font-medium">
+              <p className="mb-4 inline-block px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary font-medium">
                 Apollo Search © {new Date().getFullYear()} | To Open Science
               </p>
               <div className="flex justify-center mb-2">
