@@ -1,0 +1,182 @@
+"use client"
+
+import { useState } from "react"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Bookmark, ExternalLink, Copy, Check, Filter } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+interface Paper {
+  title: string
+  authors: string[]
+  year: string
+  journal?: string
+  url?: string
+  doi?: string
+}
+
+interface SearchResultsProps {
+  results: {
+    summary: string
+    sources: Paper[]
+  }
+}
+
+export function SearchResults({ results }: SearchResultsProps) {
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [savedPapers, setSavedPapers] = useState<number[]>([])
+  const [sortBy, setSortBy] = useState<"relevance" | "year" | "title">("relevance")
+
+  const copyToClipboard = (text: string, index: number) => {
+    navigator.clipboard.writeText(text)
+    setCopiedIndex(index)
+    setTimeout(() => setCopiedIndex(null), 2000)
+  }
+
+  const toggleSavePaper = (index: number) => {
+    if (savedPapers.includes(index)) {
+      setSavedPapers(savedPapers.filter((i) => i !== index))
+    } else {
+      setSavedPapers([...savedPapers, index])
+    }
+  }
+
+  const sortedSources = [...results.sources].sort((a, b) => {
+    if (sortBy === "year") {
+      return Number.parseInt(b.year) - Number.parseInt(a.year)
+    } else if (sortBy === "title") {
+      return a.title.localeCompare(b.title)
+    }
+    return 0 // Default is relevance, which is the original order
+  })
+
+  return (
+    <div className="space-y-6">
+      <Card className="border-primary/20">
+        <CardHeader>
+          <CardTitle>Research Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="prose max-w-none dark:prose-invert">
+            <p>{results.summary}</p>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button variant="outline" size="sm" onClick={() => copyToClipboard(results.summary, -1)}>
+            {copiedIndex === -1 ? (
+              <>
+                <Check className="mr-2 h-4 w-4" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="mr-2 h-4 w-4" />
+                Copy Summary
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <div>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Academic Sources ({results.sources.length})</h2>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Filter className="mr-2 h-4 w-4" />
+                Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Sort Options</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setSortBy("relevance")}>Relevance</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSortBy("year")}>Year (newest first)</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSortBy("title")}>Title (A-Z)</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {sortedSources.map((source, index) => (
+            <Card key={index} className="paper-card border-primary/20 transition-colors">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between">
+                  <CardTitle className="text-lg line-clamp-2">{source.title}</CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => toggleSavePaper(index)}
+                    className={savedPapers.includes(index) ? "text-primary" : ""}
+                  >
+                    <Bookmark className="h-5 w-5" />
+                    <span className="sr-only">Save paper</span>
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="pb-2">
+                <div className="space-y-2">
+                  <p className="text-sm line-clamp-1">
+                    <span className="font-medium">Authors:</span> {source.authors.join(", ")}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Year:</span> {source.year}
+                  </p>
+                  {source.journal && (
+                    <p className="text-sm line-clamp-1">
+                      <span className="font-medium">Journal:</span> {source.journal}
+                    </p>
+                  )}
+                  {source.doi && (
+                    <p className="text-sm line-clamp-1">
+                      <span className="font-medium">DOI:</span> {source.doi}
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+              <CardFooter className="flex flex-wrap gap-2 justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    copyToClipboard(
+                      `${source.title} by ${source.authors.join(", ")} (${source.year})${source.journal ? ` in ${source.journal}` : ""}${source.doi ? ` DOI: ${source.doi}` : ""}`,
+                      index,
+                    )
+                  }
+                >
+                  {copiedIndex === index ? (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="mr-2 h-4 w-4" />
+                      Copy Citation
+                    </>
+                  )}
+                </Button>
+                {source.url && (
+                  <Button variant="default" size="sm" asChild className="bg-primary hover:bg-primary/90">
+                    <a href={source.url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      View Paper
+                    </a>
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}

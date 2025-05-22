@@ -1,0 +1,46 @@
+import { ApoloLogo } from "@/components/apolo-logo"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Search } from "lucide-react"
+import Link from "next/link"
+
+export default function Home() {
+  return (
+    <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 items-center justify-center bg-[url('/library-background.jpg')] bg-cover bg-center bg-no-repeat">
+        <div className="container mx-auto px-4 py-16">
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-8 flex flex-col items-center justify-center">
+              <ApoloLogo size="lg" />
+              <p className="mt-4 text-center text-lg text-white drop-shadow-md">
+                AI-powered academic search engine for scholarly research
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-background/90 p-6 shadow-lg backdrop-blur border border-border">
+              <form className="flex flex-col space-y-4">
+                <div className="relative">
+                  <Input type="text" placeholder="Enter your research query..." className="h-14 pl-4 pr-12 text-lg" />
+                  <Button type="submit" size="icon" className="absolute right-1 top-1 h-12 w-12 rounded-md bg-primary">
+                    <Search className="h-6 w-6" />
+                    <span className="sr-only">Search</span>
+                  </Button>
+                </div>
+
+                <div className="text-center">
+                  <Link href="/advanced" className="text-sm text-primary hover:underline">
+                    Advanced Search Options
+                  </Link>
+                </div>
+              </form>
+            </div>
+
+            <div className="mt-8 text-center text-sm text-white drop-shadow-md">
+              <p>To open science and knowledge for everyone</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
