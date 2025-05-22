@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Bookmark, ExternalLink, Copy, Check, Filter, Download } from "lucide-react"
+import { savePaper, removePaper, isPaperSaved } from "@/lib/saved-papers"
+import { useToast } from "@/components/ui/use-toast"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,8 +34,20 @@ interface SearchResultsProps {
 
 export function SearchResults({ results }: SearchResultsProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
-  const [savedPapers, setSavedPapers] = useState<number[]>([])
+  const [savedPaperIndices, setSavedPaperIndices] = useState<number[]>([])
   const [sortBy, setSortBy] = useState<"relevance" | "year" | "title">("relevance")
+  const { toast } = useToast()
+  
+  // Check which papers are already saved on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const initialSavedIndices = results.sources.map((source, index) => {
+        return isPaperSaved(source) ? index : -1
+      }).filter(index => index !== -1)
+      
+      setSavedPaperIndices(initialSavedIndices)
+    }
+  }, [results.sources])
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text)
@@ -42,10 +56,28 @@ export function SearchResults({ results }: SearchResultsProps) {
   }
 
   const toggleSavePaper = (index: number) => {
-    if (savedPapers.includes(index)) {
-      setSavedPapers(savedPapers.filter((i) => i !== index))
+    const source = results.sources[index]
+    
+    if (savedPaperIndices.includes(index)) {
+      // Remove paper from saved papers
+      const success = removePaper(source)
+      if (success) {
+        setSavedPaperIndices(savedPaperIndices.filter((i) => i !== index))
+        toast({
+          title: "Paper removed",
+          description: "Paper has been removed from your saved papers",
+        })
+      }
     } else {
-      setSavedPapers([...savedPapers, index])
+      // Add paper to saved papers
+      const success = savePaper(source)
+      if (success) {
+        setSavedPaperIndices([...savedPaperIndices, index])
+        toast({
+          title: "Paper saved",
+          description: "Paper has been saved to your collection",
+        })
+      }
     }
   }
 
@@ -120,7 +152,7 @@ export function SearchResults({ results }: SearchResultsProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => toggleSavePaper(index)}
-                    className={savedPapers.includes(index) ? "text-primary" : ""}
+                    className={savedPaperIndices.includes(index) ? "text-primary" : ""}
                   >
                     <Bookmark className="h-5 w-5" />
                     <span className="sr-only">Save paper</span>
@@ -198,7 +230,7 @@ export function SearchResults({ results }: SearchResultsProps) {
                 )}
                 {(source.url || source.doi) && (
                   <Button variant="outline" size="sm" asChild>
-                    <a href={source.url || getDoiUrl(source.doi)} target="_blank" rel="noopener noreferrer" download>
+                    <a href={source.url || (source.doi ? getDoiUrl(source.doi) : '#')} target="_blank" rel="noopener noreferrer" download>
                       <Download className="mr-2 h-4 w-4" />
                       Download
                     </a>

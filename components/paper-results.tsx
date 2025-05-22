@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Bookmark, ExternalLink, Copy, Check } from "lucide-react"
+import { savePaper, removePaper, isPaperSaved, SavedPaper } from "@/lib/saved-papers"
+import { useToast } from "@/components/ui/use-toast"
 
 interface PaperResultsProps {
   results: {
@@ -21,7 +23,19 @@ interface PaperResultsProps {
 
 export function PaperResults({ results }: PaperResultsProps) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
-  const [savedPapers, setSavedPapers] = useState<number[]>([])
+  const [savedPaperIndices, setSavedPaperIndices] = useState<number[]>([])
+  const { toast } = useToast()
+
+  // Check which papers are already saved on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const initialSavedIndices = results.sources.map((source, index) => {
+        return isPaperSaved(source) ? index : -1
+      }).filter(index => index !== -1)
+      
+      setSavedPaperIndices(initialSavedIndices)
+    }
+  }, [results.sources])
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text)
@@ -30,10 +44,28 @@ export function PaperResults({ results }: PaperResultsProps) {
   }
 
   const toggleSavePaper = (index: number) => {
-    if (savedPapers.includes(index)) {
-      setSavedPapers(savedPapers.filter((i) => i !== index))
+    const source = results.sources[index]
+    
+    if (savedPaperIndices.includes(index)) {
+      // Remove paper from saved papers
+      const success = removePaper(source)
+      if (success) {
+        setSavedPaperIndices(savedPaperIndices.filter((i) => i !== index))
+        toast({
+          title: "Paper removed",
+          description: "Paper has been removed from your saved papers",
+        })
+      }
     } else {
-      setSavedPapers([...savedPapers, index])
+      // Add paper to saved papers
+      const success = savePaper(source)
+      if (success) {
+        setSavedPaperIndices([...savedPaperIndices, index])
+        toast({
+          title: "Paper saved",
+          description: "Paper has been saved to your collection",
+        })
+      }
     }
   }
 
@@ -66,7 +98,7 @@ export function PaperResults({ results }: PaperResultsProps) {
       </Card>
 
       <div>
-        <h2 className="text-xl font-semibold mb-4">Academic Sources</h2>
+        <h2 className="text-xl font-semibold mb-4 text-primary drop-shadow-sm">Academic Sources</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {results.sources.map((source, index) => (
             <Card key={index} className="paper-card border-primary/20 dark:border-primary/30 transition-colors">
@@ -77,7 +109,7 @@ export function PaperResults({ results }: PaperResultsProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => toggleSavePaper(index)}
-                    className={savedPapers.includes(index) ? "text-primary" : ""}
+                    className={savedPaperIndices.includes(index) ? "text-primary" : ""}
                   >
                     <Bookmark className="h-5 w-5" />
                     <span className="sr-only">Save paper</span>

@@ -1,5 +1,3 @@
-import { perplexity } from "@ai-sdk/perplexity"
-import { generateText } from "ai"
 import { NextResponse } from "next/server"
 
 // The initial prompt to guide Perplexity's search
@@ -55,43 +53,58 @@ export async function POST(request: Request) {
     }
 
     try {
-      console.log("Calling Perplexity API with model: sonar-pro")
+      console.log("Calling Perplexity API with model: sonar")
 
-      // Try with a simpler response format first to test the API connection
-      const { text } = await generateText({
-        model: perplexity("sonar-pro", {
-          apiKey: process.env.PPLX_API_KEY,
-        }),
-        system: "You are a helpful assistant. Keep your response short and simple.",
-        prompt: 'Test connection. Respond with: {"status": "ok"}',
-        maxTokens: 100,
+      const apiResponse = await fetch("https://api.perplexity.ai/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.PPLX_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "sonar",
+          messages: [
+            {
+              role: "system",
+              content: SYSTEM_PROMPT
+            },
+            {
+              role: "user",
+              content: query
+            }
+          ],
+          max_tokens: 4000,
+          web_search_options: {
+            search_context_size: "high"
+          }
+        })
       })
 
-      console.log("Test API response:", text)
+      if (!apiResponse.ok) {
+        const errorText = await apiResponse.text()
+        console.error("Perplexity API error response:", errorText)
+        throw new Error(`API responded with status ${apiResponse.status}: ${errorText}`)
+      }
 
-      // Now try the actual search
-      console.log("Making actual search request to Perplexity API")
-      const response = await generateText({
-        model: perplexity("sonar-pro", {
-          apiKey: process.env.PPLX_API_KEY,
-        }),
-        system: SYSTEM_PROMPT,
-        prompt: query,
-        maxTokens: 4000, // Ensure we have enough tokens for a complete response
-      })
+      const responseData = await apiResponse.json()
+      console.log("Received response from Perplexity:", responseData)
 
-      console.log("Received response from Perplexity:", response)
+      if (!responseData.choices || !responseData.choices[0] || !responseData.choices[0].message) {
+        throw new Error("Unexpected API response format")
+      }
 
+      const content = responseData.choices[0].message.content
+      
       // Parse the JSON response
       try {
-        const results = JSON.parse(response.text)
+        const results = JSON.parse(content)
         return NextResponse.json(results)
       } catch (parseError) {
         console.error("Error parsing JSON response:", parseError)
-        console.log("Raw response:", response.text)
+        console.log("Raw response:", content)
 
         // Attempt to extract JSON from the text if it's not properly formatted
-        const jsonMatch = response.text.match(/\{[\s\S]*\}/)
+        const jsonMatch = content.match(/\{[\s\S]*\}/)
         if (jsonMatch) {
           try {
             const extractedJson = JSON.parse(jsonMatch[0])
@@ -105,7 +118,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             error: "Failed to parse search results. Please try again.",
-            rawResponse: response.text.substring(0, 1000), // Include part of the raw response for debugging
+            rawResponse: content.substring(0, 1000), // Include part of the raw response for debugging
           },
           { status: 500 },
         )
@@ -122,9 +135,12 @@ export async function POST(request: Request) {
         errorDetails = apiError.stack
       }
 
-      if (apiError.response) {
+      // Check if apiError is an object with a response property
+      if (apiError && typeof apiError === 'object' && 'response' in apiError && apiError.response) {
         try {
-          const responseData = await apiError.response.json()
+          // TypeScript needs this type assertion
+          const response = apiError.response as Response;
+          const responseData = await response.json()
           console.error("API error response:", responseData)
           errorDetails = JSON.stringify(responseData)
         } catch (e) {
