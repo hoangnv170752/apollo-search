@@ -16,7 +16,7 @@ export default function AdvancedSearch() {
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-md">Advanced Search</h1>
-          <p className="mt-2 text-white drop-shadow-md">Refine your search with specific criteria</p>
+          <p className="mt-2 text-[hsl(var(--tagline))] drop-shadow-md">Refine your search with specific criteria</p>
         </div>
 
         <div className="mx-auto max-w-3xl">

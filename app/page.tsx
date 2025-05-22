@@ -38,7 +38,7 @@ export default function Home() {
           <div className="mx-auto max-w-3xl">
             <div className="mb-8 flex flex-col items-center justify-center">
               <ApoloLogo size="lg" />
-              <p className="mt-4 text-center text-lg text-white drop-shadow-md">
+              <p className="mt-4 text-center text-lg text-[hsl(var(--tagline))] font-medium drop-shadow-md">
                 AI-powered academic search engine for scholarly research
               </p>
             </div>
