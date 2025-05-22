@@ -7,17 +7,31 @@ export function CounterContainer() {
 
   useEffect(() => {
     if (!containerRef.current) return
-
-    // Create an iframe to load the counter
-    const iframe = document.createElement("iframe")
-    iframe.style.display = "none"
-    iframe.src = "https://www.freevisitorcounters.com/en/home/counter/1343620/t/6"
-
-    containerRef.current.appendChild(iframe)
-
+    
+    // Add the counter authentication script
+    const authScript = document.createElement("script")
+    authScript.type = "text/javascript"
+    authScript.src = "https://www.freevisitorcounters.com/auth.php?id=26983c836e9d44b4918cb74f28d2084bb0df4c6a"
+    authScript.async = true
+    
+    // Add the counter script with properly formatted parameters
+    const counterScript = document.createElement("script")
+    counterScript.type = "text/javascript"
+    counterScript.src = "https://www.freevisitorcounters.com/en/home/counter/1343620/t/6"
+    counterScript.async = true
+    
+    // Append scripts to the container
+    containerRef.current.appendChild(authScript)
+    containerRef.current.appendChild(counterScript)
+    
     return () => {
-      if (containerRef.current && iframe.parentNode === containerRef.current) {
-        containerRef.current.removeChild(iframe)
+      if (containerRef.current) {
+        if (authScript.parentNode === containerRef.current) {
+          containerRef.current.removeChild(authScript)
+        }
+        if (counterScript.parentNode === containerRef.current) {
+          containerRef.current.removeChild(counterScript)
+        }
       }
     }
   }, [])

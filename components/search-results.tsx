@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Bookmark, ExternalLink, Copy, Check, Filter, Download } from "lucide-react"
 import { savePaper, removePaper, isPaperSaved } from "@/lib/saved-papers"
+import { formatAPACitation } from "@/lib/citation-formats"
 import { useToast } from "@/components/ui/use-toast"
 import {
   DropdownMenu,
@@ -195,8 +196,8 @@ export function SearchResults({ results }: SearchResultsProps) {
                   size="sm"
                   onClick={() =>
                     copyToClipboard(
-                      `${source.title} by ${source.authors.join(", ")} (${source.year})${source.journal ? ` in ${source.journal}` : ""}${source.doi ? ` DOI: ${source.doi}` : ""}`,
-                      index,
+                      formatAPACitation(source),
+                      index
                     )
                   }
                 >
