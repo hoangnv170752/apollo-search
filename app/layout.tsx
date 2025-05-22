@@ -26,10 +26,10 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-1 relative">{children}</main>
             <footer className="relative z-10 border-t py-4 text-center text-sm text-muted-foreground bg-background">
-              <p className="mb-4 inline-block px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary font-medium">
-                Apollo Search © {new Date().getFullYear()} | To Open Science
-              </p>
-              <div className="flex justify-center mb-2">
+              <div className="flex items-center justify-center gap-4">
+                <p className="inline-block px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary font-medium">
+                  Apollo Search © {new Date().getFullYear()} | To Open Science
+                </p>
                 <VisitorCounterModal />
               </div>
             </footer>
