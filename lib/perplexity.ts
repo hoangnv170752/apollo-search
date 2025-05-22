@@ -11,16 +11,31 @@ export async function searchPapers(query: string) {
       body: JSON.stringify({ query }),
     })
 
+    const data = await response.json()
+
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || "Failed to search for papers")
+      const error = new Error(data.error || "Failed to search for papers")
+      // @ts-ignore - Adding custom properties to Error
+      error.details = data.details || data.message || null
+      // @ts-ignore
+      error.rawResponse = data.rawResponse || null
+      throw error
     }
 
-    const data = await response.json()
     console.log("Search results:", data)
     return data
   } catch (error) {
     console.error("Error searching papers:", error)
-    throw new Error("Failed to search for papers. Please try again.")
+
+    // If it's already our custom error with details, just rethrow it
+    if (error instanceof Error && (error as any).details) {
+      throw error
+    }
+
+    // Otherwise create a new error
+    const newError = new Error("Failed to search for papers. Please try again.")
+    // @ts-ignore
+    newError.details = error instanceof Error ? error.message : String(error)
+    throw newError
   }
 }

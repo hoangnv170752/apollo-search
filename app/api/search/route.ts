@@ -55,26 +55,43 @@ export async function POST(request: Request) {
     }
 
     try {
+      console.log("Calling Perplexity API with model: sonar-pro")
+
+      // Try with a simpler response format first to test the API connection
       const { text } = await generateText({
+        model: perplexity("sonar-pro", {
+          apiKey: process.env.PPLX_API_KEY,
+        }),
+        system: "You are a helpful assistant. Keep your response short and simple.",
+        prompt: 'Test connection. Respond with: {"status": "ok"}',
+        maxTokens: 100,
+      })
+
+      console.log("Test API response:", text)
+
+      // Now try the actual search
+      console.log("Making actual search request to Perplexity API")
+      const response = await generateText({
         model: perplexity("sonar-pro", {
           apiKey: process.env.PPLX_API_KEY,
         }),
         system: SYSTEM_PROMPT,
         prompt: query,
+        maxTokens: 4000, // Ensure we have enough tokens for a complete response
       })
 
-      console.log("Received response from Perplexity")
+      console.log("Received response from Perplexity:", response)
 
       // Parse the JSON response
       try {
-        const results = JSON.parse(text)
+        const results = JSON.parse(response.text)
         return NextResponse.json(results)
       } catch (parseError) {
         console.error("Error parsing JSON response:", parseError)
-        console.log("Raw response:", text)
+        console.log("Raw response:", response.text)
 
         // Attempt to extract JSON from the text if it's not properly formatted
-        const jsonMatch = text.match(/\{[\s\S]*\}/)
+        const jsonMatch = response.text.match(/\{[\s\S]*\}/)
         if (jsonMatch) {
           try {
             const extractedJson = JSON.parse(jsonMatch[0])
@@ -84,19 +101,43 @@ export async function POST(request: Request) {
           }
         }
 
+        // If we can't parse JSON, return a simplified response with the raw text
         return NextResponse.json(
           {
             error: "Failed to parse search results. Please try again.",
+            rawResponse: response.text.substring(0, 1000), // Include part of the raw response for debugging
           },
           { status: 500 },
         )
       }
     } catch (apiError) {
       console.error("Perplexity API error:", apiError)
+
+      // Try to extract more detailed error information
+      let errorMessage = "Error communicating with the search API."
+      let errorDetails = null
+
+      if (apiError instanceof Error) {
+        errorMessage = apiError.message
+        errorDetails = apiError.stack
+      }
+
+      if (apiError.response) {
+        try {
+          const responseData = await apiError.response.json()
+          console.error("API error response:", responseData)
+          errorDetails = JSON.stringify(responseData)
+        } catch (e) {
+          console.error("Could not parse error response:", e)
+        }
+      }
+
       return NextResponse.json(
         {
-          error: "Error communicating with the search API. Please try again later.",
-          details: apiError.message,
+          error: errorMessage,
+          details: errorDetails,
+          message:
+            "There was an error with the Perplexity API. This could be due to rate limiting, invalid parameters, or service issues.",
         },
         { status: 500 },
       )
@@ -106,7 +147,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: "Failed to search for papers. Please try again.",
-        details: error.message,
+        details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },
     )
