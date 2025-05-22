@@ -6,7 +6,7 @@ export function LoadingState() {
       <LoadingSpinner className="h-8 w-8 text-primary mb-4" />
       <p className="text-foreground">Searching academic sources...</p>
       <p className="text-xs text-muted-foreground mt-2">
-        This may take a moment as we search through academic databases
+        This may take a moment as we search through academic databases and process the results
       </p>
     </div>
   )

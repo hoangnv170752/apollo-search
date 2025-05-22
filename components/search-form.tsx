@@ -28,7 +28,9 @@ export function SearchForm() {
     setResults(null)
 
     try {
+      console.log("Submitting search for:", query)
       const searchResults = await searchPapers(query)
+      console.log("Received search results:", searchResults)
       setResults(searchResults)
     } catch (err) {
       console.error("Search error:", err)

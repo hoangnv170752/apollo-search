@@ -1,10 +1,27 @@
+"use client"
+
+import type React from "react"
+
 import { ApoloLogo } from "@/components/apolo-logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function Home() {
+  const [query, setQuery] = useState("")
+  const router = useRouter()
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!query.trim()) return
+
+    // Redirect to search page with the query
+    router.push(`/search?q=${encodeURIComponent(query)}`)
+  }
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex flex-1 items-center justify-center bg-[url('/library-background.jpg')] bg-cover bg-center bg-no-repeat">
@@ -18,9 +35,15 @@ export default function Home() {
             </div>
 
             <div className="rounded-lg bg-background/90 p-6 shadow-lg backdrop-blur border border-border">
-              <form className="flex flex-col space-y-4">
+              <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
                 <div className="relative">
-                  <Input type="text" placeholder="Enter your research query..." className="h-14 pl-4 pr-12 text-lg" />
+                  <Input
+                    type="text"
+                    placeholder="Enter your research query..."
+                    className="h-14 pl-4 pr-12 text-lg"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
                   <Button type="submit" size="icon" className="absolute right-1 top-1 h-12 w-12 rounded-md bg-primary">
                     <Search className="h-6 w-6" />
                     <span className="sr-only">Search</span>

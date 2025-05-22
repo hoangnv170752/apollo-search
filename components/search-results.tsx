@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Bookmark, ExternalLink, Copy, Check, Filter } from "lucide-react"
+import { Bookmark, ExternalLink, Copy, Check, Filter, Download } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 
 interface Paper {
   title: string
@@ -56,6 +57,11 @@ export function SearchResults({ results }: SearchResultsProps) {
     }
     return 0 // Default is relevance, which is the original order
   })
+
+  const getDoiUrl = (doi: string) => {
+    if (doi.startsWith("http")) return doi
+    return `https://doi.org/${doi.replace(/^doi:/, "")}`
+  }
 
   return (
     <div className="space-y-6">
@@ -104,12 +110,12 @@ export function SearchResults({ results }: SearchResultsProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4">
           {sortedSources.map((source, index) => (
             <Card key={index} className="paper-card border-primary/20 transition-colors">
               <CardHeader className="pb-2">
                 <div className="flex justify-between">
-                  <CardTitle className="text-lg line-clamp-2">{source.title}</CardTitle>
+                  <CardTitle className="text-lg">{source.title}</CardTitle>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -122,26 +128,36 @@ export function SearchResults({ results }: SearchResultsProps) {
                 </div>
               </CardHeader>
               <CardContent className="pb-2">
-                <div className="space-y-2">
-                  <p className="text-sm line-clamp-1">
+                <div className="space-y-3">
+                  <p className="text-sm">
                     <span className="font-medium">Authors:</span> {source.authors.join(", ")}
                   </p>
-                  <p className="text-sm">
-                    <span className="font-medium">Year:</span> {source.year}
-                  </p>
-                  {source.journal && (
-                    <p className="text-sm line-clamp-1">
-                      <span className="font-medium">Journal:</span> {source.journal}
-                    </p>
-                  )}
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="bg-primary/10">
+                      {source.year}
+                    </Badge>
+                    {source.journal && (
+                      <Badge variant="outline" className="bg-primary/5">
+                        {source.journal}
+                      </Badge>
+                    )}
+                  </div>
                   {source.doi && (
-                    <p className="text-sm line-clamp-1">
-                      <span className="font-medium">DOI:</span> {source.doi}
+                    <p className="text-sm">
+                      <span className="font-medium">DOI:</span>{" "}
+                      <a
+                        href={getDoiUrl(source.doi)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        {source.doi}
+                      </a>
                     </p>
                   )}
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-wrap gap-2 justify-end">
+              <CardFooter className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -169,6 +185,22 @@ export function SearchResults({ results }: SearchResultsProps) {
                     <a href={source.url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="mr-2 h-4 w-4" />
                       View Paper
+                    </a>
+                  </Button>
+                )}
+                {source.doi && !source.url && (
+                  <Button variant="default" size="sm" asChild className="bg-primary hover:bg-primary/90">
+                    <a href={getDoiUrl(source.doi)} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      View via DOI
+                    </a>
+                  </Button>
+                )}
+                {(source.url || source.doi) && (
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={source.url || getDoiUrl(source.doi)} target="_blank" rel="noopener noreferrer" download>
+                      <Download className="mr-2 h-4 w-4" />
+                      Download
                     </a>
                   </Button>
                 )}
