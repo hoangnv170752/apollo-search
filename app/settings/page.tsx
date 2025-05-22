@@ -4,6 +4,7 @@ import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { ThemeSwitch } from "@/components/theme-switch"
+import { ApiKeyCheck } from "@/components/api-key-check"
 
 export default function Settings() {
   return (
@@ -89,6 +90,8 @@ export default function Settings() {
               </div>
             </CardContent>
           </Card>
+
+          <ApiKeyCheck />
         </div>
       </div>
     </>

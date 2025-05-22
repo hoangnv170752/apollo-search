@@ -48,38 +48,55 @@ export async function POST(request: Request) {
 
     console.log("Searching for:", query)
 
-    const { text } = await generateText({
-      model: perplexity("sonar-pro", {
-        apiKey: process.env.PPLX_API_KEY,
-      }),
-      system: SYSTEM_PROMPT,
-      prompt: query,
-    })
+    // Check if API key exists
+    if (!process.env.PPLX_API_KEY) {
+      console.error("PPLX_API_KEY environment variable is not set")
+      return NextResponse.json({ error: "API configuration error. Please check server logs." }, { status: 500 })
+    }
 
-    console.log("Received response from Perplexity")
-
-    // Parse the JSON response
     try {
-      const results = JSON.parse(text)
-      return NextResponse.json(results)
-    } catch (parseError) {
-      console.error("Error parsing JSON response:", parseError)
-      console.log("Raw response:", text)
+      const { text } = await generateText({
+        model: perplexity("sonar-pro", {
+          apiKey: process.env.PPLX_API_KEY,
+        }),
+        system: SYSTEM_PROMPT,
+        prompt: query,
+      })
 
-      // Attempt to extract JSON from the text if it's not properly formatted
-      const jsonMatch = text.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        try {
-          const extractedJson = JSON.parse(jsonMatch[0])
-          return NextResponse.json(extractedJson)
-        } catch (e) {
-          console.error("Failed to extract JSON:", e)
+      console.log("Received response from Perplexity")
+
+      // Parse the JSON response
+      try {
+        const results = JSON.parse(text)
+        return NextResponse.json(results)
+      } catch (parseError) {
+        console.error("Error parsing JSON response:", parseError)
+        console.log("Raw response:", text)
+
+        // Attempt to extract JSON from the text if it's not properly formatted
+        const jsonMatch = text.match(/\{[\s\S]*\}/)
+        if (jsonMatch) {
+          try {
+            const extractedJson = JSON.parse(jsonMatch[0])
+            return NextResponse.json(extractedJson)
+          } catch (e) {
+            console.error("Failed to extract JSON:", e)
+          }
         }
-      }
 
+        return NextResponse.json(
+          {
+            error: "Failed to parse search results. Please try again.",
+          },
+          { status: 500 },
+        )
+      }
+    } catch (apiError) {
+      console.error("Perplexity API error:", apiError)
       return NextResponse.json(
         {
-          error: "Failed to parse search results. Please try again.",
+          error: "Error communicating with the search API. Please try again later.",
+          details: apiError.message,
         },
         { status: 500 },
       )
@@ -89,6 +106,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: "Failed to search for papers. Please try again.",
+        details: error.message,
       },
       { status: 500 },
     )
