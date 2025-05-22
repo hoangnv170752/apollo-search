@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -13,11 +13,22 @@ import { LoadingSpinner } from "@/components/loading-spinner"
 import { LoadingState } from "@/components/loading-state"
 import Link from "next/link"
 
-export function SearchForm() {
-  const [query, setQuery] = useState("")
+interface SearchFormProps {
+  initialQuery?: string
+}
+
+export function SearchForm({ initialQuery = "" }: SearchFormProps) {
+  const [query, setQuery] = useState(initialQuery)
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState(null)
   const [error, setError] = useState("")
+
+  // Update query when initialQuery changes
+  useEffect(() => {
+    if (initialQuery) {
+      setQuery(initialQuery)
+    }
+  }, [initialQuery])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

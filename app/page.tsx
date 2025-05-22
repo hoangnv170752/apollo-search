@@ -23,8 +23,17 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex flex-1 items-center justify-center bg-[url('/library-background.jpg')] bg-cover bg-center bg-no-repeat">
+    <div className="relative flex flex-1 flex-col">
+      <div
+        className="absolute inset-0 bg-[url('/circular-library.jpeg')] bg-cover bg-center bg-no-repeat"
+        style={{
+          position: "fixed",
+          width: "100%",
+          height: "100%",
+          zIndex: -1,
+        }}
+      ></div>
+      <div className="relative flex flex-1 items-center justify-center">
         <div className="container mx-auto px-4 py-16">
           <div className="mx-auto max-w-3xl">
             <div className="mb-8 flex flex-col items-center justify-center">

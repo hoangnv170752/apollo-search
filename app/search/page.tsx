@@ -9,7 +9,7 @@ import { LoadingState } from "@/components/loading-state"
 
 export default function Search() {
   const searchParams = useSearchParams()
-  const query = searchParams.get("q")
+  const query = searchParams.get("q") || ""
 
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState(null)
@@ -47,7 +47,7 @@ export default function Search() {
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <SearchForm />
+        <SearchForm initialQuery={query} />
 
         {error && (
           <div className="mt-6 bg-destructive/15 text-destructive p-4 rounded-md border border-destructive/30">
