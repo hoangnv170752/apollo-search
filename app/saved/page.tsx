@@ -1,14 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { getSavedPapers, removePaper, SavedPaper } from "@/lib/saved-papers"
 import { formatAPACitation } from "@/lib/citation-formats"
-import { Bookmark, ExternalLink, Copy, Check, Trash2, ClipboardCopy, CheckSquare } from "lucide-react"
+import { Bookmark, ExternalLink, Copy, Check, Trash2, ClipboardCopy, CheckSquare, Search } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { format } from "date-fns"
+import Link from "next/link"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 export default function SavedPapers() {
   const [savedPapers, setSavedPapers] = useState<SavedPaper[]>([])
@@ -188,14 +194,77 @@ export default function SavedPapers() {
                     <CardContent className="pb-2">
                       <div className="space-y-3">
                         <p className="text-sm">
-                          <span className="font-medium">Authors:</span> {paper.authors.join(", ")}
+                          <span className="font-medium">Authors:</span>{" "}
+                          {paper.authors.map((author, idx) => (
+                            <span key={idx}>
+                              {idx > 0 && ", "}
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <span 
+                                    className="text-primary hover:underline hover:text-primary/80 transition-colors cursor-pointer"
+                                  >
+                                    {author}
+                                  </span>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-2" align="start">
+                                  <div className="flex flex-col gap-2">
+                                    <a
+                                      href={`https://scholar.google.com/scholar?q=author:${encodeURIComponent(author)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-2 text-sm px-2 py-1 hover:bg-primary/10 rounded-md transition-colors"
+                                    >
+                                      <Search className="h-4 w-4" />
+                                      <span>Search on Google Scholar</span>
+                                    </a>
+                                    <Link
+                                      href={`/openalex/search?q=${encodeURIComponent(author)}&type=authors`}
+                                      className="flex items-center gap-2 text-sm px-2 py-1 hover:bg-primary/10 rounded-md transition-colors"
+                                    >
+                                      <Search className="h-4 w-4" />
+                                      <span>Search on OpenAlex</span>
+                                    </Link>
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                            </span>
+                          ))}
                         </p>
                         <p className="text-sm">
                           <span className="font-medium">Year:</span> {paper.year}
                         </p>
                         {paper.journal && (
                           <p className="text-sm">
-                            <span className="font-medium">Journal:</span> {paper.journal}
+                            <span className="font-medium">Journal:</span>{" "}
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <span 
+                                  className="text-primary hover:underline hover:text-primary/80 transition-colors cursor-pointer"
+                                >
+                                  {paper.journal}
+                                </span>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-2" align="start">
+                                <div className="flex flex-col gap-2">
+                                  <a
+                                    href={`https://scholar.google.com/scholar?q=${encodeURIComponent(paper.journal)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 text-sm px-2 py-1 hover:bg-primary/10 rounded-md transition-colors"
+                                  >
+                                    <Search className="h-4 w-4" />
+                                    <span>Search on Google Scholar</span>
+                                  </a>
+                                  <Link
+                                    href={`/openalex/search?q=${encodeURIComponent(paper.journal)}&type=works`}
+                                    className="flex items-center gap-2 text-sm px-2 py-1 hover:bg-primary/10 rounded-md transition-colors"
+                                  >
+                                    <Search className="h-4 w-4" />
+                                    <span>Search on OpenAlex</span>
+                                  </Link>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
                           </p>
                         )}
                         {paper.doi && (
