@@ -31,7 +31,7 @@ export function ApoloLogo({ size = "md", showText = true }: ApoloLogoProps) {
       {showText && (
         <span className={`font-serif font-bold ${textClasses[size]}`}>
           <span className="text-primary">apollo</span>
-          <span className="text-foreground">search</span>
+          <span className="font-bold bg-black/50 dark:bg-white/50 text-white dark:text-black px-1 rounded">search</span>
         </span>
       )}
     </div>
