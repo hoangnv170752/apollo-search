@@ -8,9 +8,9 @@ import { VisitorCounterModal } from "@/components/visitor-counter-modal"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Apolo Search | Academic Research Assistant",
+  title: "Apollo Search | Academic Research Assistant",
   description: "AI-powered academic research assistant for finding scholarly papers",
-  generator: "v0.dev",
+  generator: "Akashi",
 }
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
             <footer className="relative z-10 border-t py-4 text-center text-sm text-muted-foreground bg-background">
               <div className="flex items-center justify-center gap-4">
                 <p className="inline-block px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary font-medium">
-                  Apollo Search © {new Date().getFullYear()} | To Open Science
+                  Apollo Search © {new Date().getFullYear()} | To Open Science | By Akashi | v0.0.1
                 </p>
                 <VisitorCounterModal />
               </div>

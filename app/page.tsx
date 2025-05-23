@@ -38,7 +38,7 @@ export default function Home() {
           <div className="mx-auto max-w-3xl">
             <div className="mb-8 flex flex-col items-center justify-center">
               <ApoloLogo size="lg" />
-              <p className="mt-4 inline-block px-3 py-1 rounded-md bg-black/70 dark:bg-white/10 backdrop-blur-sm text-center text-lg text-white font-medium">
+              <p className="mt-4 inline-block px-3 py-1 rounded-md bg-black/70 dark:bg-white/10 backdrop-blur-sm text-center text-lg text-red-500 font-medium">
                 AI-powered academic search engine for scholarly research
               </p>
             </div>
@@ -68,7 +68,7 @@ export default function Home() {
             </div>
 
             <div className="mt-8 text-center text-sm">
-              <p className="inline-block px-3 py-1 rounded-md bg-black/70 dark:bg-white/10 backdrop-blur-sm text-white font-medium">
+              <p className="inline-block px-3 py-1 rounded-md bg-black/70 dark:bg-white/10 backdrop-blur-sm text-red-500 font-medium">
                 To open science and knowledge for everyone
               </p>
             </div>
