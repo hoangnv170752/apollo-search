@@ -117,7 +117,7 @@ export default function AboutPage() {
                   </p>
                   <div className="mt-3 flex gap-2">
                     <Button asChild className="bg-primary hover:bg-primary/90">
-                      <a href="mailto:contact@example.com">
+                      <a href="mailto:hoang.nv.ral@gmail.com">
                         <Mail className="mr-2 h-4 w-4" />
                         Contact Me
                       </a>
