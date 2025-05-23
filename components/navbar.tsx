@@ -19,6 +19,7 @@ export function Navbar() {
     { href: "/saved", label: "Saved Papers", icon: Bookmark },
     { href: "/notes", label: "My Notes", icon: FileText },
     { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/about", label: "About author", icon: FileText },
   ]
 
   const isActive = (path: string) => pathname === path
