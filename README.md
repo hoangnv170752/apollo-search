@@ -65,6 +65,43 @@ PPLX_API_KEY=your_perplexity_api_key_here
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## Project Story
+
+### From Frustration to Innovation: The Birth of Apollo Search
+
+#### The Spark
+
+It all began during my doctoral research in computational linguistics. After spending countless hours navigating through disjointed academic search engines, downloading papers from various sources, and manually synthesizing information, I realized there had to be a better way.
+
+The turning point came when I discovered the power of AI-based search and synthesis. What if researchers could not only find relevant papers but also get instant summaries and connections between research findings?
+
+#### The Journey
+
+Building Apollo Search wasn't straightforward. The initial challenge was finding an AI model capable of understanding academic content with sufficient depth. After experimenting with several options, Perplexity's API emerged as the clear winner due to its ability to search and synthesize scholarly content with remarkable accuracy.
+
+The technical implementation journey involved:
+
+1. **Setting up the Next.js framework** - Choosing a modern, performant foundation
+2. **Designing the search interface** - Creating intuitive advanced search options for academic parameters
+3. **Integrating the Perplexity API** - Moving from the SDK to direct API calls for better control
+4. **Building the results display** - Crafting a UI that presents academic information clearly with proper citations
+5. **Enhancing with filters and sorting** - Adding tools researchers need to refine their searches
+
+#### Challenges Overcome
+
+Several obstacles appeared along the way:
+
+- **API Response Formatting**: Perplexity's responses occasionally came in inconsistent formats, requiring robust parsing logic
+- **Citation Extraction**: Ensuring proper academic citations from AI-generated content was particularly challenging
+- **Performance Optimization**: Balancing comprehensive search results with response time
+- **Academic Accuracy**: Fine-tuning prompts to ensure scholarly precision in the results
+
+#### The Result
+
+Today, Apollo Search stands as a bridge between traditional academic research methods and AI-powered knowledge discovery. It transforms hours of manual searching into seconds of intelligent exploration, helping researchers focus on what truly matters - understanding and building upon existing knowledge.
+
+The project continues to evolve, with plans for multi-language support, expanded citation styles, and deeper integration with reference management tools.
+
 ---
 
 <a name="tiếng-việt"></a>
