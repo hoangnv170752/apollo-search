@@ -17,7 +17,7 @@ export function Navbar() {
     { href: "/", label: "Home", icon: Search },
     { href: "/advanced", label: "Advanced Search", icon: Search },
     { href: "/saved", label: "Saved Papers", icon: Bookmark },
-    { href: "/notes", label: "My Notes", icon: FileText },
+    { href: "/notes", label: "Research Notes", icon: FileText },
     { href: "/settings", label: "Settings", icon: Settings },
     { href: "/about", label: "About author", icon: FileText },
   ]

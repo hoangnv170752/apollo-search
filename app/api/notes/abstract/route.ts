@@ -1,50 +1,49 @@
 import { NextResponse } from "next/server"
 
-// The initial prompt to guide Perplexity's search
+// The prompt for generating abstracts based on research titles and saved papers
 const SYSTEM_PROMPT = `
-You are an AI research assistant specializing in academic literature searches, powered by Perplexity. Your primary goal is to find and summarize information from scholarly articles, research papers, conference proceedings, and reputable academic sources related to the user's query.
+You are an AI research assistant specializing in academic literature analysis, powered by Perplexity. Your task is to generate a comprehensive abstract based on the provided research title and any saved papers related to the topic.
 
-When presented with a user's query:
+When presented with a research title and saved papers:
 
-1. Prioritize searching academic databases (like Google Scholar, PubMed, arXiv, Semantic Scholar, etc.), university repositories, and established scientific journals. While general web sources can supplement, the focus should be on scholarly content.
-2. Synthesize the key findings, methodologies, or conclusions from the relevant academic papers into a concise summary.
-3. Clearly list the primary sources used for the summary. For EACH source, include these details:
-   - Title (full title of the paper)
-   - Authors (full list of authors)
-   - Year (publication year)
-   - Journal/conference name (if available)
-   - URL (direct link to the paper if available)
-   - DOI (if available)
-4. Focus on accurately representing the information found in the academic literature.
-5. If the query is too broad or doesn't lend itself well to academic search, state that and provide the best possible answer based on available scholarly information or suggest refining the query.
+1. Analyze the research title to understand the core topic and research question.
+2. Review the saved papers to extract key findings, methodologies, and conclusions relevant to the research title.
+3. Synthesize this information into a well-structured, academic-style abstract that:
+   - Introduces the research area and its significance
+   - Outlines the key research questions or objectives
+   - Summarizes the methodological approaches used in the field
+   - Highlights the main findings and their implications
+   - Suggests potential directions for future research
+4. Suggest an improved, more specific research title based on the generated abstract and the analyzed papers.
+
+Your abstract should be approximately 250-300 words, written in formal academic language, and should accurately represent the current state of knowledge based on the provided papers.
 
 Your response should be in JSON format with the following structure:
 {
-  "summary": "A comprehensive summary of the findings",
-  "sources": [
-    {
-      "title": "Full paper title",
-      "authors": ["Author 1", "Author 2"],
-      "year": "Publication year",
-      "journal": "Journal or conference name",
-      "url": "URL to the paper if available",
-      "doi": "DOI if available"
-    }
-  ]
+  "abstract": "The generated abstract text",
+  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
+  "renamedTitle": "An improved, more specific research title"
 }
 
-IMPORTANT: Always include at least 5-10 relevant sources if available. Make sure every source has a title, authors, and year at minimum. Include URLs whenever possible so users can access the papers directly.
+IMPORTANT: 
+- Generate 5 relevant keywords that accurately represent the main themes of the abstract.
+- The renamed title should be more specific, academically appropriate, and reflective of the content in the abstract.
 `
 
 export async function POST(request: Request) {
   try {
-    const { query } = await request.json()
+    const { title, savedPapers } = await request.json()
 
-    if (!query || typeof query !== "string") {
-      return NextResponse.json({ error: "Query is required" }, { status: 400 })
+    if (!title || typeof title !== "string") {
+      return NextResponse.json({ error: "Research title is required" }, { status: 400 })
     }
 
-    console.log("Searching for:", query)
+    if (!Array.isArray(savedPapers)) {
+      return NextResponse.json({ error: "Saved papers must be an array" }, { status: 400 })
+    }
+
+    console.log("Generating abstract for:", title)
+    console.log("Using saved papers:", savedPapers.length)
 
     // Check if API key exists
     if (!process.env.PPLX_API_KEY) {
@@ -53,7 +52,24 @@ export async function POST(request: Request) {
     }
 
     try {
-      console.log("Calling Perplexity API with model: sonar")
+      console.log("Calling Perplexity API with model: sonar-pro")
+
+      // Prepare the content for the user message
+      let userContent = `Research Title: ${title}\n\n`
+      
+      if (savedPapers.length > 0) {
+        userContent += "Saved Papers:\n"
+        savedPapers.forEach((paper: any, index: number) => {
+          userContent += `${index + 1}. Title: ${paper.title}\n`
+          if (paper.authors) userContent += `   Authors: ${paper.authors.join(", ")}\n`
+          if (paper.year) userContent += `   Year: ${paper.year}\n`
+          if (paper.journal) userContent += `   Journal: ${paper.journal}\n`
+          if (paper.doi) userContent += `   DOI: ${paper.doi}\n`
+          userContent += "\n"
+        })
+      } else {
+        userContent += "No saved papers provided. Generate an abstract based solely on the research title."
+      }
 
       const apiResponse = await fetch("https://api.perplexity.ai/chat/completions", {
         method: "POST",
@@ -70,13 +86,10 @@ export async function POST(request: Request) {
             },
             {
               role: "user",
-              content: query
+              content: userContent
             }
           ],
-          max_tokens: 4000,
-          web_search_options: {
-            search_context_size: "high"
-          }
+          max_tokens: 1000
         })
       })
 
@@ -87,7 +100,7 @@ export async function POST(request: Request) {
       }
 
       const responseData = await apiResponse.json()
-      console.log("Received response from Perplexity:", responseData)
+      console.log("Received response from Perplexity")
 
       if (!responseData.choices || !responseData.choices[0] || !responseData.choices[0].message) {
         throw new Error("Unexpected API response format")
@@ -128,7 +141,7 @@ export async function POST(request: Request) {
         // If we can't parse JSON, return a simplified response with the raw text
         return NextResponse.json(
           {
-            error: "Failed to parse search results. Please try again.",
+            error: "Failed to parse abstract generation results. Please try again.",
             rawResponse: content.substring(0, 1000), // Include part of the raw response for debugging
           },
           { status: 500 },
@@ -138,25 +151,12 @@ export async function POST(request: Request) {
       console.error("Perplexity API error:", apiError)
 
       // Try to extract more detailed error information
-      let errorMessage = "Error communicating with the search API."
+      let errorMessage = "Error communicating with the API."
       let errorDetails = null
 
       if (apiError instanceof Error) {
         errorMessage = apiError.message
         errorDetails = apiError.stack
-      }
-
-      // Check if apiError is an object with a response property
-      if (apiError && typeof apiError === 'object' && 'response' in apiError && apiError.response) {
-        try {
-          // TypeScript needs this type assertion
-          const response = apiError.response as Response;
-          const responseData = await response.json()
-          console.error("API error response:", responseData)
-          errorDetails = JSON.stringify(responseData)
-        } catch (e) {
-          console.error("Could not parse error response:", e)
-        }
       }
 
       return NextResponse.json(
@@ -170,10 +170,10 @@ export async function POST(request: Request) {
       )
     }
   } catch (error) {
-    console.error("Error searching papers:", error)
+    console.error("Error generating abstract:", error)
     return NextResponse.json(
       {
-        error: "Failed to search for papers. Please try again.",
+        error: "Failed to generate abstract. Please try again.",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },
