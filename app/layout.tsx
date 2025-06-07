@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navbar } from "@/components/navbar"
 import { VisitorCounterModal } from "@/components/visitor-counter-modal"
+import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,6 +21,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script
+          id="feedbask-widget-script"
+          src="https://cdn.feedbask.com/widget.js"
+          data-client-key="ea11e9cc-47ac-4921-b0ff-2668c51aab1c"
+          defer
+        />
+      </head>
       <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="flex min-h-screen flex-col">
@@ -30,7 +39,7 @@ export default function RootLayout({
                 <p className="inline-block px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary font-medium">
                   Apollo Search © {new Date().getFullYear()} | To Open Science | By Akashi | v0.0.1
                 </p>
-                <VisitorCounterModal />
+                {/* <VisitorCounterModal /> */}
               </div>
             </footer>
           </div>
