@@ -78,8 +78,8 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p>
-                  Hello! I'm Nguyen Van Hoang, a Fullstack Developer, double-degree bachelor and a language lover with a passion for academic research tools 
-                  and knowledge management systems. I got a lot of love from my love, my family and friends. Raised a 6 years old dog named Kem.
+                  Hello! I'm Nguyen Van Hoang, a Full-stack Developer, double-degree bachelor, master degree and a language lover with a passion for academic research tools 
+                  and knowledge management systems. I got a lot of love from my love, my family and friends. Raised a 7 years old dog named Kem and 2 years old dog named Sua - son of Kem.
                   Apollo Search is my project to make scholarly research more accessible 
                   and efficient.
                 </p>
