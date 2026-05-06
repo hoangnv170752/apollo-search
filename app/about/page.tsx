@@ -147,13 +147,29 @@ export default function AboutPage() {
               <CardContent className="space-y-4">
                 <div className="grid gap-4">
                   <div className="p-4 rounded-lg border border-border">
+                    <h3 className="font-medium">Real-time abnormal behavior detection in indoor IoT environments using multistage YOLO, DeepSORT, and SlowFast network integration</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Proc. SPIE 14062, International Conference on Electronic Information Engineering and Artificial Intelligence (EIEAI 2025), 140620E (3 February 2026)
+                    </p>
+                    <p className="text-sm mt-1">
+                      <a
+                        href="https://doi.org/10.1117/12.3100763"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        View Publication
+                      </a>
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-lg border border-border">
                     <h3 className="font-medium">Multi-access Edge Computing Architecture and Smart Agriculture Application in Ubiquitous Power Internet of Things</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       SSRN Electronic Journal
                     </p>
                     <p className="text-sm mt-1">
                       <a
-                        href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4618689"
+                        href="https://airccj.org/csecfp/library/jvol.php?last=IJMNCT&volname=13&volno=4"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"
